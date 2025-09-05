@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:latest # Gunakan citra resmi PostgreSQL
+    container_name: db-postgress
+    environment:
+      POSTGRES_PASSWORD: password123 # Ganti dengan password yang aman
+      POSTGRES_DB: dbspos # Nama database yang diinginkan
+      POSTGRES_USER: postgres # Nama user yang diinginkan
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Untuk menyimpan data database
+    ports:
+      - "5430:5432" # Port untuk akses PostgreSQL
+    networks:
+      - app_network
+
+  php-apps:
+    build:
+      context: . # Direktori untuk Dockerfile PHP
+    container_name: mi-php-apps
+    ports:
+      - "8182:80" # Port untuk akses aplikasi PHP
+    volumes:
+      - ./src:/var/www/html # Mount kode PHP ke dalam kontainer
+    depends_on:
+      - db # Pastikan database berjalan sebelum aplikasi PHP
+    networks:
+      - app_network
+
+volumes:
+  postgres_data: # Definisi volume untuk PostgreSQL
+
+networks:
+  app_network: # Definisi jaringan untuk komunikasi antar kontainer
+    driver: bridge
